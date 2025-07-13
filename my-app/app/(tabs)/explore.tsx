@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';

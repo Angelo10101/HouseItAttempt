@@ -38,10 +38,10 @@ export default function HomeScreen() {
           {services.map((service) => (
             <TouchableOpacity
               key={service.id}
-              style={[styles.serviceCard, { borderLeftColor: service.color }]}
               onPress={() => navigateToService(service.id)}
             >
-              <ThemedView style={styles.serviceContent}>
+              <ThemedView style={[styles.serviceCard, { borderLeftColor: service.color }]}>
+                <ThemedView style={styles.serviceContent}>
                 <ThemedText style={styles.serviceIcon}>{service.icon}</ThemedText>
                 <ThemedView style={styles.serviceInfo}>
                   <ThemedText type="defaultSemiBold" style={styles.serviceName}>
@@ -52,6 +52,7 @@ export default function HomeScreen() {
                   </ThemedText>
                 </ThemedView>
                 <ThemedText style={styles.arrow}>›</ThemedText>
+                </ThemedView>
               </ThemedView>
             </TouchableOpacity>
           ))}
@@ -93,7 +94,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   serviceCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     marginBottom: 16,
     borderLeftWidth: 6,
@@ -118,14 +118,13 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 18,
     marginBottom: 4,
-    color: '#2C3E50',
   },
   serviceDescription: {
     fontSize: 14,
-    color: '#7F8C8D',
+    opacity: 0.7,
   },
   arrow: {
     fontSize: 24,
-    color: '#BDC3C7',
+    opacity: 0.5,
   },
 });
