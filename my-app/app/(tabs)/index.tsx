@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   serviceIcon: {
-    fontSize: 24,
+    fontSize: 20,
     marginRight: 16,
   },
   serviceInfo: {
