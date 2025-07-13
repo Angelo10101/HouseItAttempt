@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
   },
   providerInfo: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   providerName: {
     fontSize: 18,
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
+    backgroundColor: 'transparent',
   },
   rating: {
     fontSize: 14,
@@ -176,10 +178,12 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    backgroundColor: 'transparent',
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   detailLabel: {
     fontSize: 14,
