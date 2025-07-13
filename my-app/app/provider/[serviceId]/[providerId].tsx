@@ -96,7 +96,7 @@ export default function ProviderMenuScreen() {
 
       <ScrollView style={styles.servicesContainer} showsVerticalScrollIndicator={false}>
         {provider.services.map((service) => (
-          <ThemedView key={service.id} style={styles.serviceCard}>
+          <ThemedView key={service.id} style={styles.serviceCard} lightColor = "#FFFFFF">
             <ThemedView style={styles.serviceInfo}>
               <ThemedText type="defaultSemiBold" style={styles.serviceName}>
                 {service.name}
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   serviceCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
