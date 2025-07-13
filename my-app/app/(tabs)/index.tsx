@@ -3,8 +3,6 @@ import { Image } from 'expo-image';
 import { Platform, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -28,10 +26,10 @@ export default function HomeScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
 		headerImage={
-		  <SafeAreaView style={styles.headerContainer}>
+		  <ThemedView style={styles.headerContainer}>
 			<ThemedText style={styles.headerTitle}>HouseIt</ThemedText>
 			<ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
-		  </SafeAreaView>
+		  </ThemedView>
 		}>
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.title}>What service do you need?</ThemedText>
