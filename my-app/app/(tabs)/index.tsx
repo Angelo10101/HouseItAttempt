@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
+    paddingTop: 40,
   },
   headerTitle: {
     fontSize: 48,
