@@ -1,8 +1,8 @@
 modules = ["nodejs-20"]
-run = "npx expo start"
+run = "cd my-appnpx expo start"
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "npx expo start"]
+run = ["sh", "-c", "cd my-appnpx expo start"]
