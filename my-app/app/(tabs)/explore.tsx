@@ -66,11 +66,36 @@ export default function ExploreScreen() {
           Pay securely through the app after service completion.
         </ThemedText>
       </Collapsible>
-    </ParallaxScrollView>
+    </ParallaxScroll<TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <ThemedText style={styles.signOutText}>Sign Out</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  userInfo: {
+    marginBottom: 20,
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: 'rgba(46, 139, 87, 0.1)',
+  },
+  signOutButton: {
+    backgroundColor: '#ff4444',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signOutText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   headerImage: {
     color: '#FFFFFF',
     bottom: -90,
