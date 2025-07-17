@@ -6,3 +6,15 @@ channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "cd my-appnpx expo start"]
+
+[workflows]
+runButton = "Start React Native App"
+
+[[workflows.workflow]]
+name = "Start React Native App"
+author = 45106524
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd my-app && npx expo start"

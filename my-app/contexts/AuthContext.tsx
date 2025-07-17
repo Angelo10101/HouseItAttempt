@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import '../config/firebase'; // Import Firebase configuration
 
 interface AuthContextType {
   user: FirebaseAuthTypes.User | null;
@@ -28,7 +29,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Configure Google Sign-In
     GoogleSignin.configure({
-      webClientId: 'YOUR_WEB_CLIENT_ID', // From Firebase Console
+      webClientId: 'YOUR_WEB_CLIENT_ID', // From Firebase Console - replace with actual web client ID
+      offlineAccess: true,
     });
 
     const unsubscribe = auth().onAuthStateChanged(async (user) => {

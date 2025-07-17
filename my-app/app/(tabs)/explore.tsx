@@ -1,13 +1,26 @@
-import { StyleSheet } from 'react-native';
 
+import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 
 export default function ExploreScreen() {
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/login');
+    } catch (error) {
+      Alert.alert('Sign Out Error', 'Failed to sign out. Please try again.');
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
@@ -22,6 +35,13 @@ export default function ExploreScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">About HouseIt</ThemedText>
       </ThemedView>
+
+      {user && (
+        <ThemedView style={styles.userInfo}>
+          <ThemedText>Welcome, {user.displayName || user.email}!</ThemedText>
+          <ThemedText>Email: {user.email}</ThemedText>
+        </ThemedView>
+      )}
 
       <ThemedText>
         HouseIt connects you with trusted home service professionals in your area. 
@@ -66,19 +86,15 @@ export default function ExploreScreen() {
           Pay securely through the app after service completion.
         </ThemedText>
       </Collapsible>
-    </ParallaxScroll<TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <ThemedText style={styles.signOutText}>Sign Out</ThemedText>
-        </TouchableOpacity>
-      </ThemedView>
-    </ThemedView>
+
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <ThemedText style={styles.signOutText}>Sign Out</ThemedText>
+      </TouchableOpacity>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
   userInfo: {
     marginBottom: 20,
     padding: 15,
