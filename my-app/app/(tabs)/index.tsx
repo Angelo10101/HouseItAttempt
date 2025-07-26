@@ -7,11 +7,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-//this is from chatgpt
-import { useNavigation } from 'expo-router';
-import { useLayoutEffect } from 'react';
-import { Button } from 'react-native';
-// up until here
+
 
 const services = [
   { id: 'electrician', name: 'Electrician', icon: '⚡', color: '#FF6B35' },
@@ -24,17 +20,6 @@ const services = [
 ];
 
 export default function HomeScreen() {
-	//this is from chatgpt
-  const navigation = useNavigation();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Button title="Login" onPress={() => router.push('/auth')} />
-      ),
-    });
-  }, [navigation]);
-	//up until here
 
   const navigateToService = (serviceId: string) => {
     router.push(`/service/${serviceId}`);
@@ -47,6 +32,12 @@ export default function HomeScreen() {
 		  <ThemedView style={styles.headerContainer}>
 			<ThemedText style={styles.headerTitle}>HouseIt</ThemedText>
 			<ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
+			<TouchableOpacity 
+			  style={styles.loginButton}
+			  onPress={() => router.push('/auth')}
+			>
+			  <ThemedText style={styles.loginButtonText}>Login</ThemedText>
+			</TouchableOpacity>
 		  </ThemedView>
 		}>
       <ThemedView style={styles.container}>
@@ -144,5 +135,19 @@ const styles = StyleSheet.create({
   arrow: {
     fontSize: 24,
     opacity: 0.5,
+  },
+  loginButton: {
+    marginTop: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  loginButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
