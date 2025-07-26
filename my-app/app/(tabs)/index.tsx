@@ -7,6 +7,12 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+//this is from chatgpt
+import { useNavigation } from 'expo-router';
+import { useLayoutEffect } from 'react';
+import { Button } from 'react-native';
+// up until here
+
 const services = [
   { id: 'electrician', name: 'Electrician', icon: '⚡', color: '#FF6B35' },
   { id: 'plumbing', name: 'Plumbing', icon: '🔧', color: '#4ECDC4' },
@@ -18,6 +24,18 @@ const services = [
 ];
 
 export default function HomeScreen() {
+	//this is from chatgpt
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button title="Login" onPress={() => router.push('/auth')} />
+      ),
+    });
+  }, [navigation]);
+	//up until here
+
   const navigateToService = (serviceId: string) => {
     router.push(`/service/${serviceId}`);
   };
