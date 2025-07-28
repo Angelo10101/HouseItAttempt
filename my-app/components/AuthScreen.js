@@ -15,13 +15,13 @@ export default function AuthScreen() {
     try {
       if (mode === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
-        Alert.alert('Success', 'Account created successfully!');
+        Alert.alert('Success', 'Account created successfully!'); //this alert only shows on mobile. Use just alert('success') for browser
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        Alert.alert('Success', 'Logged in successfully!');
+        Alert.alert('Success', 'Logged in successfully!'); //this alert only works on mobile
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', error.message); // this alert only works on mobile
     }
   };
 
@@ -168,4 +168,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
