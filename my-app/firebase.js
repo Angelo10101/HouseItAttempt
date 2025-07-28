@@ -11,7 +11,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDZ8LMZ_Mvro1VnRLQqIUt3y1yLGrbjWo8",
   authDomain: "houseitattempt.firebaseapp.com",
   projectId: "houseitattempt",
-  storageBucket: "houseitattempt.firebasestorage.app",
+  storageBucket: "houseitattempt.appspot.com",
   messagingSenderId: "178886195513",
   appId: "1:178886195513:web:1de9ff03f39f366f0d10e8",
   measurementId: "G-1E6C6W7EC7"
