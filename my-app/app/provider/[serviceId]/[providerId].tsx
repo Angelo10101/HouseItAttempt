@@ -32,9 +32,14 @@ const providerServices = {
   }
 };
 
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../../firebase';
+import { saveCartItem, clearCart, saveRequest } from '../../../services/firestoreService';
+
 export default function ProviderMenuScreen() {
   const { serviceId, providerId } = useLocalSearchParams();
   const [cart, setCart] = useState<{id: number, name: string, price: number, quantity: number}[]>([]);
+  const [user, loading, error] = useAuthState(auth);
   
   const serviceKey = Array.isArray(serviceId) ? serviceId[0] : serviceId;
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
@@ -49,16 +54,31 @@ export default function ProviderMenuScreen() {
     );
   }
 
-  const addToCart = (service: any) => {
+  const addToCart = async (service: any) => {
+    if (!user) {
+      Alert.alert('Authentication Required', 'Please log in to add items to cart.');
+      return;
+    }
+
     const existingItem = cart.find(item => item.id === service.id);
+    let updatedItem;
+    
     if (existingItem) {
+      updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
       setCart(cart.map(item => 
         item.id === service.id 
-          ? { ...item, quantity: item.quantity + 1 }
+          ? updatedItem
           : item
       ));
     } else {
-      setCart([...cart, { ...service, quantity: 1 }]);
+      updatedItem = { ...service, quantity: 1 };
+      setCart([...cart, updatedItem]);
+    }
+
+    try {
+      await saveCartItem(user.uid, updatedItem);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save item to cart.');
     }
   };
 
@@ -66,22 +86,43 @@ export default function ProviderMenuScreen() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const checkout = () => {
+  const checkout = async () => {
     if (cart.length === 0) {
       Alert.alert('Cart Empty', 'Please select at least one service.');
       return;
     }
-    
-    Alert.alert(
-      'Booking Confirmed!',
-      `Your total is $${getTotalPrice()}. A professional will arrive within the estimated time.`,
-      [
-        {
-          text: 'OK',
-          onPress: () => router.push('/')
-        }
-      ]
-    );
+
+    if (!user) {
+      Alert.alert('Authentication Required', 'Please log in to checkout.');
+      return;
+    }
+
+    try {
+      const requestData = {
+        items: cart,
+        totalAmount: getTotalPrice(),
+        providerName: provider.name,
+        serviceType: serviceKey,
+        providerId: providerKey
+      };
+
+      const requestId = await saveRequest(user.uid, requestData);
+      await clearCart(user.uid);
+      setCart([]);
+
+      Alert.alert(
+        'Booking Confirmed!',
+        `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => router.push('/')
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to process checkout. Please try again.');
+    }
   };
 
   return (
