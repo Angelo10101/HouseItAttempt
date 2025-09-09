@@ -14,6 +14,11 @@ import { db } from '../firebase';
 // Cart functions
 export const saveCartItem = async (userId, item) => {
   try {
+    // Validate that we have a userId
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    
     const cartRef = doc(db, 'users', userId, 'cart', item.id.toString());
     await setDoc(cartRef, {
       ...item,
@@ -22,6 +27,8 @@ export const saveCartItem = async (userId, item) => {
     return true;
   } catch (error) {
     console.error('Error saving cart item:', error);
+    console.error('User ID:', userId);
+    console.error('Item:', item);
     throw error;
   }
 };

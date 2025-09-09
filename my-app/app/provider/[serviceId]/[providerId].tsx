@@ -55,8 +55,13 @@ export default function ProviderMenuScreen() {
   }
 
   const addToCart = async (service: any) => {
-    if (!user) {
+    if (!user || loading) {
       Alert.alert('Authentication Required', 'Please log in to add items to cart.');
+      return;
+    }
+
+    if (!user.uid) {
+      Alert.alert('Error', 'User authentication incomplete. Please try logging out and back in.');
       return;
     }
 
@@ -76,9 +81,23 @@ export default function ProviderMenuScreen() {
     }
 
     try {
+      console.log('Saving cart item for user:', user.uid);
       await saveCartItem(user.uid, updatedItem);
+      console.log('Cart item saved successfully');
     } catch (error) {
-      Alert.alert('Error', 'Failed to save item to cart.');
+      console.error('Cart save error:', error);
+      Alert.alert('Error', `Failed to save item to cart: ${error.message}`);
+      
+      // Revert the cart change on error
+      if (existingItem) {
+        setCart(cart.map(item => 
+          item.id === service.id 
+            ? existingItem
+            : item
+        ));
+      } else {
+        setCart(cart.filter(item => item.id !== service.id));
+      }
     }
   };
 
