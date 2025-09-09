@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   doc, 
@@ -18,7 +17,32 @@ export const saveCartItem = async (userId, item) => {
     if (!userId) {
       throw new Error('User ID is required');
     }
-    
+
+    // Import auth to check current user
+    const { auth } = require('../firebase');
+    const currentUser = auth.currentUser;
+
+    console.log('=== AUTH DEBUG ===');
+    console.log('Auth current user:', currentUser);
+    console.log('Auth current user UID:', currentUser?.uid);
+    console.log('Passed userId:', userId);
+    console.log('User IDs match:', currentUser?.uid === userId);
+    console.log('User email verified:', currentUser?.emailVerified);
+    console.log('Auth state:', !!currentUser);
+    console.log('User email:', currentUser?.email);
+
+    // Get the auth token to verify it's valid
+    if (currentUser) {
+      try {
+        const token = await currentUser.getIdToken();
+        console.log('Token exists:', !!token);
+        console.log('Token length:', token.length);
+      } catch (tokenError) {
+        console.error('Token error:', tokenError);
+      }
+    }
+    console.log('=== END AUTH DEBUG ===');
+
     const cartRef = doc(db, 'users', userId, 'cart', item.id.toString());
     await setDoc(cartRef, {
       ...item,
