@@ -1,5 +1,5 @@
 
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -63,7 +63,9 @@ export default function ServiceScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <>
+	  <Stack.Screen options={{headerShown: false }} />
+			<ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ThemedText style={styles.backText}>‹ Back</ThemedText>
@@ -106,6 +108,7 @@ export default function ServiceScreen() {
         ))}
       </ScrollView>
     </ThemedView>
+  </>
   );
 }
 
