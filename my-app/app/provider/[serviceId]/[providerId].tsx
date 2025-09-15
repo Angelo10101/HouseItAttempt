@@ -145,7 +145,9 @@ export default function ProviderMenuScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ThemedText style={styles.backText}>‹ Back</ThemedText>
@@ -198,6 +200,7 @@ export default function ProviderMenuScreen() {
         </ThemedView>
       )}
     </ThemedView>
+    </>
   );
 }
 
