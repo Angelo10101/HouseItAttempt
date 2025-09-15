@@ -1,4 +1,5 @@
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native';
 import { Image } from 'expo-image';
 import { Platform, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
@@ -20,37 +21,46 @@ const services = [
 ];
 
 export default function HomeScreen() {
-
+  const insets = useSafeAreaInsets();
   const navigateToService = (serviceId: string) => {
     router.push(`/service/${serviceId}`);
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
-		headerImage={
-		  <ThemedView style={styles.headerContainer}>
-			<ThemedText style={styles.headerTitle}>HouseIt</ThemedText>
-			<ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
-			<TouchableOpacity 
-			  style={styles.loginButton}
-			  onPress={() => router.push('/auth')}
-			>
-			  <ThemedText style={styles.loginButtonText}>Login</ThemedText>
-			</TouchableOpacity>
-		  </ThemedView>
-		}>
-      <ThemedView style={styles.container}>
-        <ThemedText type="title" style={styles.title}>What service do you need?</ThemedText>
-        
-        <ScrollView style={styles.servicesContainer} showsVerticalScrollIndicator={false}>
-          {services.map((service) => (
-            <TouchableOpacity
-              key={service.id}
-              onPress={() => navigateToService(service.id)}
-            >
-              <ThemedView style={[styles.serviceCard, { borderLeftColor: service.color }]}>
-                <ThemedView style={styles.serviceContent}>
+  <ParallaxScrollView
+    headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
+    headerImage={
+      <ThemedView
+        style={[
+          styles.headerContainer,
+          {
+            paddingTop: insets.top + 24, // ensures space for notch + extra breathing room
+            height: 120,                // set a good min height for header
+          },
+        ]}
+      >
+        <ThemedText style={styles.headerTitle}>HouseIt</ThemedText>
+        <ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push('/auth')}
+        >
+          <ThemedText style={styles.loginButtonText}>Login</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+    }
+  >
+    <ThemedView style={styles.container}>
+      <ThemedText type="title" style={styles.title}>What service do you need?</ThemedText>
+
+      <ScrollView style={styles.servicesContainer} showsVerticalScrollIndicator={false}>
+        {services.map((service) => (
+          <TouchableOpacity
+            key={service.id}
+            onPress={() => navigateToService(service.id)}
+          >
+            <ThemedView style={[styles.serviceCard, { borderLeftColor: service.color }]}>
+              <ThemedView style={styles.serviceContent}>
                 <ThemedText style={styles.serviceIcon}>{service.icon}</ThemedText>
                 <ThemedView style={styles.serviceInfo}>
                   <ThemedText type="defaultSemiBold" style={styles.serviceName}>
@@ -61,27 +71,28 @@ export default function HomeScreen() {
                   </ThemedText>
                 </ThemedView>
                 <ThemedText style={styles.arrow}>›</ThemedText>
-                </ThemedView>
               </ThemedView>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+            </ThemedView>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </ThemedView>
+  </ParallaxScrollView>
+);
 }
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    paddingTop: 60,
-	paddingBottom: 20,
-  },
+	// flex: 1, // REMOVE THIS LINE
+	  minHeight: 180, // or whatever fits nicely, try 180-220
+	  justifyContent: 'center',
+	  alignItems: 'center',
+	  backgroundColor: 'transparent',
+	  paddingBottom: 10,
+	},
   headerTitle: {
     fontSize: 48,
+    lineHeight: 58, // <-- add this line! (try 1.2x font size)
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
