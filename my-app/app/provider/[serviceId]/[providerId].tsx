@@ -1,9 +1,10 @@
 
 import { useLocalSearchParams, router, Stack } from 'expo-router';
-import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useAlert } from '@/components/AlertProvider';
 
 const providerServices = {
   electrician: {
@@ -40,11 +41,12 @@ export default function ProviderMenuScreen() {
   const { serviceId, providerId } = useLocalSearchParams();
   const [cart, setCart] = useState<{id: number, name: string, price: number, quantity: number}[]>([]);
   const [user, loading, error] = useAuthState(auth);
+  const { showAlert } = useAlert();
   
   const serviceKey = Array.isArray(serviceId) ? serviceId[0] : serviceId;
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
   
-  const provider = providerServices[serviceKey as keyof typeof providerServices]?.[parseInt(providerKey)];
+  const provider = (providerServices as any)[serviceKey]?.[parseInt(providerKey)];
   
   if (!provider) {
     return (
@@ -56,17 +58,25 @@ export default function ProviderMenuScreen() {
 
   const addToCart = async (service: any) => {
     if (!user || loading) {
-      Alert.alert('Authentication Required', 'Please log in to add items to cart.');
+      showAlert({
+        title: 'Authentication Required',
+        message: 'Please log in to add items to cart.',
+        type: 'info'
+      });
       return;
     }
 
     if (!user.uid) {
-      Alert.alert('Error', 'User authentication incomplete. Please try logging out and back in.');
+      showAlert({
+        title: 'Error',
+        message: 'User authentication incomplete. Please try logging out and back in.',
+        type: 'error'
+      });
       return;
     }
 
     const existingItem = cart.find(item => item.id === service.id);
-    let updatedItem;
+    let updatedItem: {id: number, name: string, price: number, quantity: number};
     
     if (existingItem) {
       updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
@@ -86,7 +96,11 @@ export default function ProviderMenuScreen() {
       console.log('Cart item saved successfully');
     } catch (error) {
       console.error('Cart save error:', error);
-      Alert.alert('Error', `Failed to save item to cart: ${error.message}`);
+      showAlert({
+        title: 'Error',
+        message: `Failed to save item to cart: ${(error as Error).message}`,
+        type: 'error'
+      });
       
       // Revert the cart change on error
       if (existingItem) {
@@ -107,12 +121,20 @@ export default function ProviderMenuScreen() {
 
   const checkout = async () => {
     if (cart.length === 0) {
-      Alert.alert('Cart Empty', 'Please select at least one service.');
+      showAlert({
+        title: 'Cart Empty',
+        message: 'Please select at least one service.',
+        type: 'info'
+      });
       return;
     }
 
     if (!user) {
-      Alert.alert('Authentication Required', 'Please log in to checkout.');
+      showAlert({
+        title: 'Authentication Required',
+        message: 'Please log in to checkout.',
+        type: 'info'
+      });
       return;
     }
 
@@ -129,18 +151,23 @@ export default function ProviderMenuScreen() {
       await clearCart(user.uid);
       setCart([]);
 
-      Alert.alert(
-        'Booking Confirmed!',
-        `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
-        [
+      showAlert({
+        title: 'Booking Confirmed!',
+        message: `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
+        type: 'success',
+        buttons: [
           {
             text: 'OK',
             onPress: () => router.push('/')
           }
         ]
-      );
+      });
     } catch (error) {
-      Alert.alert('Error', 'Failed to process checkout. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Failed to process checkout. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -157,7 +184,7 @@ export default function ProviderMenuScreen() {
       </ThemedView>
 
       <ScrollView style={styles.servicesContainer} showsVerticalScrollIndicator={false}>
-        {provider.services.map((service) => (
+        {provider.services.map((service: any) => (
           <ThemedView key={service.id} style={styles.serviceCard} lightColor = "#FFFFFF">
             <ThemedView style={styles.serviceInfo}>
               <ThemedText type="defaultSemiBold" style={styles.serviceName}>

@@ -1,31 +1,47 @@
 // AuthScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useRouter } from 'expo-router';
+import { useAlert } from './AlertProvider';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState('login');
   const router = useRouter();
+  const { showAlert } = useAlert();
 
   const handleSubmit = async () => {
     try {
       if (mode === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
-        Alert.alert('Success', 'Account created successfully!', [
-          { text: 'OK', onPress: () => router.push('/') }
-        ]);
+        showAlert({
+          title: 'Success',
+          message: 'Account created successfully!',
+          type: 'success',
+          buttons: [
+            { text: 'OK', onPress: () => router.push('/') }
+          ]
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        Alert.alert('Success', 'Logged in successfully!', [
-          { text: 'OK', onPress: () => router.push('/') }
-        ]);
+        showAlert({
+          title: 'Success',
+          message: 'Logged in successfully!',
+          type: 'success',
+          buttons: [
+            { text: 'OK', onPress: () => router.push('/') }
+          ]
+        });
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      showAlert({
+        title: 'Error',
+        message: error.message,
+        type: 'error'
+      });
     }
   };
 
