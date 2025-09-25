@@ -1,9 +1,10 @@
 
 import { useLocalSearchParams, router, Stack } from 'expo-router';
-import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useAlert } from '@/components/CustomAlert';
 
 const providerServices = {
   electrician: {
@@ -40,6 +41,7 @@ export default function ProviderMenuScreen() {
   const { serviceId, providerId } = useLocalSearchParams();
   const [cart, setCart] = useState<{id: number, name: string, price: number, quantity: number}[]>([]);
   const [user, loading, error] = useAuthState(auth);
+  const { showAlert } = useAlert();
   
   const serviceKey = Array.isArray(serviceId) ? serviceId[0] : serviceId;
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
@@ -56,12 +58,12 @@ export default function ProviderMenuScreen() {
 
   const addToCart = async (service: any) => {
     if (!user || loading) {
-      Alert.alert('Authentication Required', 'Please log in to add items to cart.');
+      showAlert('Authentication Required', 'Please log in to add items to cart.');
       return;
     }
 
     if (!user.uid) {
-      Alert.alert('Error', 'User authentication incomplete. Please try logging out and back in.');
+      showAlert('Error', 'User authentication incomplete. Please try logging out and back in.');
       return;
     }
 
@@ -86,7 +88,7 @@ export default function ProviderMenuScreen() {
       console.log('Cart item saved successfully');
     } catch (error) {
       console.error('Cart save error:', error);
-      Alert.alert('Error', `Failed to save item to cart: ${error.message}`);
+      showAlert('Error', `Failed to save item to cart: ${error.message}`);
       
       // Revert the cart change on error
       if (existingItem) {
@@ -107,12 +109,12 @@ export default function ProviderMenuScreen() {
 
   const checkout = async () => {
     if (cart.length === 0) {
-      Alert.alert('Cart Empty', 'Please select at least one service.');
+      showAlert('Cart Empty', 'Please select at least one service.');
       return;
     }
 
     if (!user) {
-      Alert.alert('Authentication Required', 'Please log in to checkout.');
+      showAlert('Authentication Required', 'Please log in to checkout.');
       return;
     }
 
@@ -129,7 +131,7 @@ export default function ProviderMenuScreen() {
       await clearCart(user.uid);
       setCart([]);
 
-      Alert.alert(
+      showAlert(
         'Booking Confirmed!',
         `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
         [
@@ -140,7 +142,7 @@ export default function ProviderMenuScreen() {
         ]
       );
     } catch (error) {
-      Alert.alert('Error', 'Failed to process checkout. Please try again.');
+      showAlert('Error', 'Failed to process checkout. Please try again.');
     }
   };
 
