@@ -1,4 +1,3 @@
-
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
@@ -42,12 +41,12 @@ export default function ProviderMenuScreen() {
   const [cart, setCart] = useState<{id: number, name: string, price: number, quantity: number}[]>([]);
   const [user, loading, error] = useAuthState(auth);
   const { showAlert } = useAlert();
-  
+
   const serviceKey = Array.isArray(serviceId) ? serviceId[0] : serviceId;
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
-  
+
   const provider = providerServices[serviceKey as keyof typeof providerServices]?.[parseInt(providerKey)];
-  
+
   if (!provider) {
     return (
       <ThemedView style={styles.container}>
@@ -69,7 +68,7 @@ export default function ProviderMenuScreen() {
 
     const existingItem = cart.find(item => item.id === service.id);
     let updatedItem;
-    
+
     if (existingItem) {
       updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
       setCart(cart.map(item => 
@@ -89,7 +88,7 @@ export default function ProviderMenuScreen() {
     } catch (error) {
       console.error('Cart save error:', error);
       showAlert('Error', `Failed to save item to cart: ${error.message}`);
-      
+
       // Revert the cart change on error
       if (existingItem) {
         setCart(cart.map(item => 
@@ -172,7 +171,7 @@ export default function ProviderMenuScreen() {
                 ${service.price}
               </ThemedText>
             </ThemedView>
-            
+
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => addToCart(service)}
@@ -193,7 +192,7 @@ export default function ProviderMenuScreen() {
               Total: ${getTotalPrice()}
             </ThemedText>
           </ThemedView>
-          
+
           <TouchableOpacity style={styles.checkoutButton} onPress={checkout}>
             <ThemedText style={styles.checkoutButtonText}>
               Book Services - ${getTotalPrice()}

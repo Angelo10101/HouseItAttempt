@@ -1,10 +1,18 @@
 // AuthScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useRouter } from 'expo-router';
 import { useAlert } from './CustomAlert';
+import { useRouter } from 'expo-router';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
