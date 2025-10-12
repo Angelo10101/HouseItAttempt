@@ -1,7 +1,5 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SafeAreaView } from 'react-native';
-import { Image } from 'expo-image';
-import { Platform, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView, Image, Platform, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -43,7 +41,7 @@ export default function HomeScreen() {
         <Image
           source={require('@/assets/images/houseit-logo.png')}
           style={styles.logo}
-          contentFit="contain"
+          resizeMode="contain"
         />
         <ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
         <TouchableOpacity

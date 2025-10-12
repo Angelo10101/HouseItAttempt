@@ -3,8 +3,6 @@ import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useAlert } from '@/components/CustomAlert';
-
 const providerServices = {
   electrician: {
     1: {
@@ -40,7 +38,6 @@ export default function ProviderMenuScreen() {
   const { serviceId, providerId } = useLocalSearchParams();
   const [cart, setCart] = useState<{id: number, name: string, price: number, quantity: number}[]>([]);
   const [user, loading, error] = useAuthState(auth);
-  const { showAlert } = useAlert();
 
   const serviceKey = Array.isArray(serviceId) ? serviceId[0] : serviceId;
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
