@@ -15,7 +15,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#2E8B57',
+        tabBarActiveTintColor: '#000000',
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -23,7 +23,10 @@ export default function TabLayout() {
           ios: {
             position: 'absolute',
           },
-          default: {},
+          default: {
+            backgroundColor: '#FFFFFF',
+            borderTopColor: '#E5E5E5',
+          },
         }),
       }}>
       <Tabs.Screen

@@ -1,26 +1,26 @@
 
 /**
- * HouseIt app color scheme - Green theme representing home and reliability
+ * HouseIt app color scheme - Minimalistic black on white theme
  */
 
-const tintColorLight = '#2E8B57';
-const tintColorDark = '#4ECDC4';
+const tintColorLight = '#000000';
+const tintColorDark = '#FFFFFF';
 
 export const Colors = {
   light: {
-    text: '#2C3E50',
-    background: '#F8F9FA',
+    text: '#000000',
+    background: '#FFFFFF',
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#95A5A6',
+    icon: '#000000',
+    tabIconDefault: '#666666',
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#1A252F',
+    text: '#FFFFFF',
+    background: '#000000',
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#7F8C8D',
+    icon: '#FFFFFF',
+    tabIconDefault: '#999999',
     tabIconSelected: tintColorDark,
   },
 };
