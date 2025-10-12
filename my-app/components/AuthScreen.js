@@ -8,10 +8,10 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useAlert } from './CustomAlert';
 import { useRouter } from 'expo-router';
 
 export default function AuthScreen() {
@@ -19,23 +19,22 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState('login');
   const router = useRouter();
-  const { showAlert } = useAlert();
 
   const handleSubmit = async () => {
     try {
       if (mode === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
-        showAlert('Success', 'Account created successfully!', [
+        Alert.alert('Success', 'Account created successfully!', [
           { text: 'OK', onPress: () => router.push('/') }
         ]);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        showAlert('Success', 'Logged in successfully!', [
+        Alert.alert('Success', 'Logged in successfully!', [
           { text: 'OK', onPress: () => router.push('/') }
         ]);
       }
     } catch (error) {
-      showAlert('Error', error.message);
+      Alert.alert('Error', error.message);
     }
   };
 

@@ -40,7 +40,11 @@ export default function HomeScreen() {
           },
         ]}
       >
-        <ThemedText style={styles.headerTitle}>HouseIt</ThemedText>
+        <Image
+          source={require('@/assets/images/houseit-logo.png')}
+          style={styles.logo}
+          contentFit="contain"
+        />
         <ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
         <TouchableOpacity
           style={styles.loginButton}
@@ -90,12 +94,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingBottom: 10,
   },
-  headerTitle: {
-    fontSize: 48,
-    lineHeight: 58,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
+  logo: {
+    width: 200,
+    height: 60,
+    marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,

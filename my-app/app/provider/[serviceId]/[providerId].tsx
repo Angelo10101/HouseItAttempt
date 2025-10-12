@@ -1,5 +1,5 @@
 import { useLocalSearchParams, router, Stack } from 'expo-router';
-import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -57,12 +57,12 @@ export default function ProviderMenuScreen() {
 
   const addToCart = async (service: any) => {
     if (!user || loading) {
-      showAlert('Authentication Required', 'Please log in to add items to cart.');
+      Alert.alert('Authentication Required', 'Please log in to add items to cart.');
       return;
     }
 
     if (!user.uid) {
-      showAlert('Error', 'User authentication incomplete. Please try logging out and back in.');
+      Alert.alert('Error', 'User authentication incomplete. Please try logging out and back in.');
       return;
     }
 
@@ -85,9 +85,10 @@ export default function ProviderMenuScreen() {
       console.log('Saving cart item for user:', user.uid);
       await saveCartItem(user.uid, updatedItem);
       console.log('Cart item saved successfully');
+      Alert.alert('Added to Cart', `${service.name} has been added to your cart`);
     } catch (error) {
       console.error('Cart save error:', error);
-      showAlert('Error', `Failed to save item to cart: ${error.message}`);
+      Alert.alert('Error', `Failed to save item to cart: ${error.message}`);
 
       // Revert the cart change on error
       if (existingItem) {
@@ -107,13 +108,16 @@ export default function ProviderMenuScreen() {
   };
 
   const checkout = async () => {
-    if (cart.length === 0) {
-      showAlert('Cart Empty', 'Please select at least one service.');
+    if (!user) {
+      Alert.alert('Login Required', 'Please login to book services', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Login', onPress: () => router.push('/auth') }
+      ]);
       return;
     }
 
-    if (!user) {
-      showAlert('Authentication Required', 'Please log in to checkout.');
+    if (cart.length === 0) {
+      Alert.alert('Empty Cart', 'Please add services to your cart first');
       return;
     }
 
@@ -130,7 +134,7 @@ export default function ProviderMenuScreen() {
       await clearCart(user.uid);
       setCart([]);
 
-      showAlert(
+      Alert.alert(
         'Booking Confirmed!',
         `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
         [
@@ -141,7 +145,8 @@ export default function ProviderMenuScreen() {
         ]
       );
     } catch (error) {
-      showAlert('Error', 'Failed to process checkout. Please try again.');
+      console.error('Checkout error:', error);
+      Alert.alert('Error', 'Failed to process checkout. Please try again.');
     }
   };
 
