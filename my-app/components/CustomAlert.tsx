@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import {
   View,
   Modal,
@@ -6,8 +7,6 @@ import {
   Pressable,
   Dimensions,
   TouchableWithoutFeedback,
-  Platform,
-  InteractionManager,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
@@ -46,40 +45,15 @@ const CustomAlert: React.FC<AlertProps> = ({ title, message, buttons = [], visib
   const backgroundColor = useThemeColor({}, 'background');
   const tintColor = useThemeColor({}, 'tint');
   const textColor = useThemeColor({}, 'text');
-  
-  // Add internal modal visibility state for mobile compatibility
-  const [internalVisible, setInternalVisible] = useState(false);
 
   const defaultButtons: AlertButton[] = buttons.length > 0 ? buttons : [{ text: 'OK', onPress: onDismiss }];
 
-  // Handle visibility changes with platform-specific timing
-  useEffect(() => {
-    if (visible) {
-      // For mobile platforms, add a small delay to ensure proper rendering
-      if (Platform.OS !== 'web') {
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => {
-            setInternalVisible(true);
-          }, Platform.OS === 'ios' ? 100 : 50);
-        });
-      } else {
-        setInternalVisible(true);
-      }
-    } else {
-      setInternalVisible(false);
-    }
-  }, [visible]);
-
   const handleButtonPress = (button: AlertButton) => {
-    // First dismiss the modal, then execute the callback
-    // This matches React Native Alert.alert behavior
     onDismiss();
-    
-    // Execute callback after a small delay to ensure modal is dismissed
     if (button.onPress) {
       setTimeout(() => {
         button.onPress!();
-      }, 100);
+      }, 50);
     }
   };
 
@@ -94,58 +68,48 @@ const CustomAlert: React.FC<AlertProps> = ({ title, message, buttons = [], visib
     }
   };
 
-  if (!internalVisible) return null;
-
   return (
     <Modal
       transparent
-      visible={internalVisible}
+      visible={visible}
       animationType="fade"
       onRequestClose={onDismiss}
-      statusBarTranslucent={Platform.OS === 'android'}
-      supportedOrientations={['portrait', 'landscape']}
     >
-      <TouchableWithoutFeedback>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <ThemedView style={[styles.alertContainer, { backgroundColor }]}>
-              {/* Alert Content */}
-              <View style={styles.contentContainer}>
-                <ThemedText type="subtitle" style={[styles.title, { color: textColor }]}>
-                  {title}
-                </ThemedText>
-                {message && (
-                  <ThemedText style={[styles.message, { color: textColor }]}>
-                    {message}
-                  </ThemedText>
-                )}
-              </View>
+      <View style={styles.overlay}>
+        <ThemedView style={[styles.alertContainer, { backgroundColor }]}>
+          <View style={styles.contentContainer}>
+            <ThemedText type="subtitle" style={[styles.title, { color: textColor }]}>
+              {title}
+            </ThemedText>
+            {message && (
+              <ThemedText style={[styles.message, { color: textColor }]}>
+                {message}
+              </ThemedText>
+            )}
+          </View>
 
-              {/* Alert Buttons */}
-              <View style={styles.buttonContainer}>
-                {defaultButtons.map((button, index) => (
-                  <Pressable
-                    key={index}
-                    style={({ pressed }) => [
-                      styles.button,
-                      index < defaultButtons.length - 1 && styles.buttonBorder,
-                      pressed && styles.buttonPressed,
-                    ]}
-                    onPress={() => handleButtonPress(button)}
-                  >
-                    <ThemedText
-                      type="defaultSemiBold"
-                      style={[styles.buttonText, getButtonStyle(button)]}
-                    >
-                      {button.text}
-                    </ThemedText>
-                  </Pressable>
-                ))}
-              </View>
-            </ThemedView>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+          <View style={styles.buttonContainer}>
+            {defaultButtons.map((button, index) => (
+              <Pressable
+                key={index}
+                style={({ pressed }) => [
+                  styles.button,
+                  index < defaultButtons.length - 1 && styles.buttonBorder,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={() => handleButtonPress(button)}
+              >
+                <ThemedText
+                  type="defaultSemiBold"
+                  style={[styles.buttonText, getButtonStyle(button)]}
+                >
+                  {button.text}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </ThemedView>
+      </View>
     </Modal>
   );
 };
@@ -163,32 +127,12 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   });
 
   const showAlert = (title: string, message?: string, buttons?: AlertButton[]) => {
-    // For mobile platforms, ensure any existing alert is cleared first
-    if (Platform.OS !== 'web' && alertState.visible) {
-      setAlertState({
-        visible: false,
-        title: '',
-        message: '',
-        buttons: [],
-      });
-      
-      // Small delay before showing new alert on mobile
-      setTimeout(() => {
-        setAlertState({
-          visible: true,
-          title,
-          message: message || '',
-          buttons: buttons || [],
-        });
-      }, 200);
-    } else {
-      setAlertState({
-        visible: true,
-        title,
-        message: message || '',
-        buttons: buttons || [],
-      });
-    }
+    setAlertState({
+      visible: true,
+      title,
+      message: message || '',
+      buttons: buttons || [],
+    });
   };
 
   const hideAlert = () => {
@@ -223,7 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    zIndex: 9999, // Ensure modal appears above everything on mobile
   },
   alertContainer: {
     width: Math.min(width - 40, 280),
@@ -235,9 +178,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 10, // Higher elevation for Android
-    zIndex: 10000, // Ensure alert content appears above overlay
-    maxHeight: '80%', // Prevent alert from taking full screen on small devices
+    elevation: 10,
   },
   contentContainer: {
     padding: 20,
