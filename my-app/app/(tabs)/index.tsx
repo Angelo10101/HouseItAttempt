@@ -7,17 +7,18 @@ import { router } from 'expo-router';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 
 
 const services = [
-  { id: 'electrician', name: 'Electrician', icon: '⚡', color: '#FF6B35' },
-  { id: 'plumbing', name: 'Plumbing', icon: '🔧', color: '#4ECDC4' },
-  { id: 'roofing', name: 'Roofing', icon: '🏠', color: '#45B7D1' },
-  { id: 'painting', name: 'Painter', icon: '🎨', color: '#96CEB4' },
-  { id: 'mechanic', name: 'In-House Mechanic', icon: '🚗', color: '#FECA57' },
-  { id: 'entertainment', name: 'Home Entertainment', icon: '📺', color: '#FF9FF3' },
-  { id: 'interior', name: 'Interior Design', icon: '🛋️', color: '#A8E6CF' },
+  { id: 'electrician', name: 'Electrician', icon: 'bolt.fill', color: '#000000' },
+  { id: 'plumbing', name: 'Plumbing', icon: 'wrench.fill', color: '#000000' },
+  { id: 'roofing', name: 'Roofing', icon: 'house.fill', color: '#000000' },
+  { id: 'painting', name: 'Painter', icon: 'paintbrush.fill', color: '#000000' },
+  { id: 'mechanic', name: 'In-House Mechanic', icon: 'car.fill', color: '#000000' },
+  { id: 'entertainment', name: 'Home Entertainment', icon: 'tv.fill', color: '#000000' },
+  { id: 'interior', name: 'Interior Design', icon: 'sofa.fill', color: '#000000' },
 ];
 
 export default function HomeScreen() {
@@ -61,7 +62,7 @@ export default function HomeScreen() {
           >
             <ThemedView style={[styles.serviceCard, { borderLeftColor: service.color }]}>
               <ThemedView style={styles.serviceContent}>
-                <ThemedText style={styles.serviceIcon}>{service.icon}</ThemedText>
+                <IconSymbol name={service.icon as any} size={24} color="#000000" style={styles.serviceIcon} />
                 <ThemedView style={styles.serviceInfo}>
                   <ThemedText type="defaultSemiBold" style={styles.serviceName}>
                     {service.name}
@@ -129,7 +130,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   serviceIcon: {
-    fontSize: 20,
     marginRight: 16,
   },
   serviceInfo: {
