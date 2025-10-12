@@ -10,11 +10,11 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 export default function ExploreScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
+      headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
       headerImage={
         <IconSymbol
           size={310}
-          color="#FFFFFF"
+          color="#000000"
           name="house.fill"
           style={styles.headerImage}
         />

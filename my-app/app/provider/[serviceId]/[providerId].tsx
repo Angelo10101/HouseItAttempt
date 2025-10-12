@@ -209,26 +209,28 @@ export default function ProviderMenuScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#2E8B57',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
   },
   backButton: {
     marginBottom: 10,
   },
   backText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 18,
   },
   title: {
-    color: '#FFFFFF',
+    color: '#000000',
     marginBottom: 4,
   },
   subtitle: {
-    color: '#E8F5E8',
+    color: '#666666',
     fontSize: 16,
   },
   servicesContainer: {
@@ -236,17 +238,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   serviceCard: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   serviceInfo: {
     flex: 1,
@@ -254,20 +253,20 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 18,
     marginBottom: 6,
-    color: '#2C3E50',
+    color: '#000000',
   },
   serviceDescription: {
     fontSize: 14,
-    color: '#7F8C8D',
+    color: '#666666',
     marginBottom: 8,
   },
   servicePrice: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#2E8B57',
+    color: '#000000',
   },
   addButton: {
-    backgroundColor: '#2E8B57',
+    backgroundColor: '#000000',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E1E8ED',
+    borderTopColor: '#E0E0E0',
   },
   cartHeader: {
     flexDirection: 'row',
@@ -290,15 +289,15 @@ const styles = StyleSheet.create({
   },
   cartTitle: {
     fontSize: 18,
-    color: '#2C3E50',
+    color: '#000000',
   },
   cartTotal: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2E8B57',
+    color: '#000000',
   },
   checkoutButton: {
-    backgroundColor: '#2E8B57',
+    backgroundColor: '#000000',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

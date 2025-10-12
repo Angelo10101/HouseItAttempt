@@ -115,26 +115,28 @@ export default function ServiceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     padding: 20,
     paddingTop: 60,
-    backgroundColor: '#2E8B57',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
   },
   backButton: {
     marginBottom: 10,
   },
   backText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 18,
   },
   title: {
-    color: '#FFFFFF',
+    color: '#000000',
     marginBottom: 4,
   },
   subtitle: {
-    color: '#E8F5E8',
+    color: '#666666',
     fontSize: 16,
   },
   providersContainer: {
@@ -148,11 +150,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   providerInfo: {
     flex: 1,
@@ -161,7 +160,7 @@ const styles = StyleSheet.create({
   providerName: {
     fontSize: 18,
     marginBottom: 8,
-    color: '#2C3E50',
+    color: '#000000',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -172,11 +171,11 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 14,
     marginRight: 8,
-    color: '#F39C12',
+    color: '#000000',
   },
   reviews: {
     fontSize: 14,
-    color: '#7F8C8D',
+    color: '#666666',
   },
   detailsContainer: {
     flexDirection: 'row',
@@ -190,16 +189,16 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    color: '#7F8C8D',
+    color: '#666666',
     marginRight: 4,
   },
   detailValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2C3E50',
+    color: '#000000',
   },
   arrow: {
     fontSize: 24,
-    color: '#BDC3C7',
+    color: '#CCCCCC',
   },
 });

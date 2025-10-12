@@ -28,14 +28,14 @@ export default function HomeScreen() {
 
   return (
   <ParallaxScrollView
-    headerBackgroundColor={{ light: '#2E8B57', dark: '#1D5B3F' }}
+    headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
     headerImage={
       <ThemedView
         style={[
           styles.headerContainer,
           {
-            paddingTop: insets.top + 24, // ensures space for notch + extra breathing room
-            height: 120,                // set a good min height for header
+            paddingTop: insets.top + 24,
+            height: 120,
           },
         ]}
       >
@@ -83,23 +83,22 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-	// flex: 1, // REMOVE THIS LINE
-	  minHeight: 180, // or whatever fits nicely, try 180-220
-	  justifyContent: 'center',
-	  alignItems: 'center',
-	  backgroundColor: 'transparent',
-	  paddingBottom: 10,
-	},
+    minHeight: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingBottom: 10,
+  },
   headerTitle: {
     fontSize: 48,
-    lineHeight: 58, // <-- add this line! (try 1.2x font size)
+    lineHeight: 58,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#000000',
     textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#E8F5E8',
+    color: '#666666',
     textAlign: 'center',
     marginTop: 8,
   },
@@ -117,12 +116,12 @@ const styles = StyleSheet.create({
   serviceCard: {
     borderRadius: 12,
     marginBottom: 16,
-    borderLeftWidth: 6,
-    elevation: 3,
+    borderLeftWidth: 4,
+    elevation: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   serviceContent: {
     flexDirection: 'row',
@@ -142,20 +141,18 @@ const styles = StyleSheet.create({
   },
   serviceDescription: {
     fontSize: 14,
-    opacity: 0.7,
+    opacity: 0.6,
   },
   arrow: {
     fontSize: 24,
-    opacity: 0.5,
+    opacity: 0.3,
   },
   loginButton: {
     marginTop: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    backgroundColor: '#000000',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   loginButtonText: {
     color: '#FFFFFF',
