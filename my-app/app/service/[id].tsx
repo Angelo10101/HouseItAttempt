@@ -3,6 +3,7 @@ import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 const serviceProviders = {
   electrician: [
@@ -87,7 +88,8 @@ export default function ServiceScreen() {
               </ThemedText>
               
               <ThemedView style={styles.ratingContainer}>
-                <ThemedText style={styles.rating}>⭐ {provider.rating}</ThemedText>
+                <IconSymbol name="star.fill" size={16} color="#000000" style={styles.starIcon} />
+                <ThemedText style={styles.rating}>{provider.rating}</ThemedText>
                 <ThemedText style={styles.reviews}>({provider.reviews} reviews)</ThemedText>
               </ThemedView>
               
@@ -167,6 +169,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     backgroundColor: 'transparent',
+  },
+  starIcon: {
+    marginRight: 4,
   },
   rating: {
     fontSize: 14,

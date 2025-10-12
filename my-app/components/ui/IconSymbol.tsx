@@ -25,6 +25,7 @@ const MAPPING = {
   'car.fill': 'directions-car',
   'tv.fill': 'tv',
   'sofa.fill': 'weekend',
+  'star.fill': 'star',
 } as IconMapping;
 
 /**
