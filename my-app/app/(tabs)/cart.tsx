@@ -146,7 +146,11 @@ export default function CartScreen() {
         </ThemedView>
       ) : (
         <>
-          <ScrollView style={styles.itemsContainer} showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            style={styles.itemsContainer} 
+            contentContainerStyle={styles.itemsContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
             {cartItems.map((item) => (
               <ThemedView key={item.id} style={styles.cartItem}>
                 <ThemedView style={styles.itemInfo}>
@@ -167,6 +171,8 @@ export default function CartScreen() {
                 </ThemedText>
               </ThemedView>
             ))}
+            {/* Add padding at bottom to ensure content doesn't hide behind checkout container */}
+            <ThemedView style={styles.bottomSpacer} />
           </ScrollView>
 
           <ThemedView style={styles.checkoutContainer}>
@@ -258,7 +264,14 @@ const styles = StyleSheet.create({
   },
   itemsContainer: {
     flex: 1,
+  },
+  itemsContentContainer: {
     padding: 20,
+    paddingBottom: 0,
+  },
+  bottomSpacer: {
+    height: 140,
+    backgroundColor: 'transparent',
   },
   cartItem: {
     flexDirection: 'row',
@@ -292,10 +305,20 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   checkoutContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
     padding: 20,
+    paddingBottom: 90,
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
   totalRow: {
     flexDirection: 'row',
