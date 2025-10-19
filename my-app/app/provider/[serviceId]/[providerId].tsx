@@ -82,7 +82,6 @@ export default function ProviderMenuScreen() {
       console.log('Saving cart item for user:', user.uid);
       await saveCartItem(user.uid, updatedItem);
       console.log('Cart item saved successfully');
-      Alert.alert('Added to Cart', `${service.name} has been added to your cart`);
     } catch (error) {
       console.error('Cart save error:', error);
       Alert.alert('Error', `Failed to save item to cart: ${error.message}`);
