@@ -6,6 +6,8 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../firebase';
 
 
 
@@ -21,6 +23,8 @@ const services = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const [user] = useAuthState(auth);
+  
   const navigateToService = (serviceId: string) => {
     router.push(`/service/${serviceId}`);
   };
@@ -44,12 +48,14 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
         <ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push('/auth')}
-        >
-          <ThemedText style={styles.loginButtonText}>Login</ThemedText>
-        </TouchableOpacity>
+        {!user && (
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push('/auth')}
+          >
+            <ThemedText style={styles.loginButtonText}>Login</ThemedText>
+          </TouchableOpacity>
+        )}
       </ThemedView>
     }
   >

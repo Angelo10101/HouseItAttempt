@@ -1,6 +1,6 @@
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 const providerServices = {
@@ -32,7 +32,7 @@ const providerServices = {
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../../firebase';
-import { saveCartItem, clearCart, saveRequest } from '../../../services/firestoreService';
+import { saveCartItem, clearCart, saveRequest, getCartItems } from '../../../services/firestoreService';
 
 export default function ProviderMenuScreen() {
   const { serviceId, providerId } = useLocalSearchParams();
@@ -43,6 +43,20 @@ export default function ProviderMenuScreen() {
   const providerKey = Array.isArray(providerId) ? providerId[0] : providerId;
 
   const provider = providerServices[serviceKey as keyof typeof providerServices]?.[parseInt(providerKey)];
+
+  useEffect(() => {
+    const loadCart = async () => {
+      if (user?.uid) {
+        try {
+          const items = await getCartItems(user.uid);
+          setCart(items);
+        } catch (error) {
+          console.error('Error loading cart:', error);
+        }
+      }
+    };
+    loadCart();
+  }, [user]);
 
   if (!provider) {
     return (
@@ -120,6 +134,7 @@ export default function ProviderMenuScreen() {
     try {
       const requestData = {
         items: cart,
+        total: getTotalPrice(),
         totalAmount: getTotalPrice(),
         providerName: provider.name,
         serviceType: serviceKey,
@@ -132,7 +147,7 @@ export default function ProviderMenuScreen() {
 
       Alert.alert(
         'Booking Confirmed!',
-        `Your total is $${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
+        `Your total is R${getTotalPrice()}. Request ID: ${requestId}. A professional will arrive within the estimated time.`,
         [
           {
             text: 'OK',
@@ -169,7 +184,7 @@ export default function ProviderMenuScreen() {
                 {service.description}
               </ThemedText>
               <ThemedText style={styles.servicePrice}>
-                ${service.price}
+                R{service.price}
               </ThemedText>
             </ThemedView>
 
@@ -190,13 +205,13 @@ export default function ProviderMenuScreen() {
               Cart ({cart.length} items)
             </ThemedText>
             <ThemedText style={styles.cartTotal}>
-              Total: ${getTotalPrice()}
+              Total: R{getTotalPrice()}
             </ThemedText>
           </ThemedView>
 
           <TouchableOpacity style={styles.checkoutButton} onPress={checkout}>
             <ThemedText style={styles.checkoutButtonText}>
-              Book Services - ${getTotalPrice()}
+              Book Services - R{getTotalPrice()}
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>

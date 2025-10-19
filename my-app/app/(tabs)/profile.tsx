@@ -129,14 +129,14 @@ export default function ProfileScreen() {
                   <ThemedView style={styles.orderItems}>
                     {order.items.map((item, index) => (
                       <ThemedText key={index} style={styles.orderItem}>
-                        • {item.name} x{item.quantity} - ${item.price * item.quantity}
+                        • {item.name} x{item.quantity} - R{item.price * item.quantity}
                       </ThemedText>
                     ))}
                   </ThemedView>
                 )}
 
                 <ThemedText style={styles.orderTotal}>
-                  Total: ${order.total || 0}
+                  Total: R{order.total || 0}
                 </ThemedText>
               </ThemedView>
             ))

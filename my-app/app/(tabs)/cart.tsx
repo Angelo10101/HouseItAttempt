@@ -6,7 +6,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { getCartItems, clearCart, saveRequest } from '../../services/firestoreService';
 import { useState, useEffect } from 'react';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 export default function CartScreen() {
   const [user, loading] = useAuthState(auth);
@@ -20,6 +21,14 @@ export default function CartScreen() {
       setLoadingCart(false);
     }
   }, [user]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.uid) {
+        loadCart();
+      }
+    }, [user])
+  );
 
   const loadCart = async () => {
     try {
@@ -150,11 +159,11 @@ export default function CartScreen() {
                     </ThemedText>
                   )}
                   <ThemedText style={styles.itemPrice}>
-                    ${item.price} x {item.quantity}
+                    R{item.price} x {item.quantity}
                   </ThemedText>
                 </ThemedView>
                 <ThemedText style={styles.itemTotal}>
-                  ${(item.price * item.quantity).toFixed(2)}
+                  R{(item.price * item.quantity).toFixed(2)}
                 </ThemedText>
               </ThemedView>
             ))}
@@ -166,7 +175,7 @@ export default function CartScreen() {
                 Total:
               </ThemedText>
               <ThemedText type="defaultSemiBold" style={styles.totalAmount}>
-                ${getTotalPrice()}
+                R{getTotalPrice()}
               </ThemedText>
             </ThemedView>
             <TouchableOpacity
