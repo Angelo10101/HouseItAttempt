@@ -26,6 +26,8 @@ const MAPPING = {
   'tv.fill': 'tv',
   'sofa.fill': 'weekend',
   'star.fill': 'star',
+  'person.fill': 'person',
+  'cart.fill': 'shopping-cart',
 } as IconMapping;
 
 /**
