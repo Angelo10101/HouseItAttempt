@@ -21,11 +21,11 @@ export default function AuthScreen() {
   const [mode, setMode] = useState('login');
   const router = useRouter();
 
-  const [request, response, promptAsync] = Platform.OS === 'web' 
+  const [request, response, promptAsync] = Platform.OS === 'web'
     ? [null, null, null]
     : Google.useIdTokenAuthRequest({
-        iosClientId: '178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij.apps.googleusercontent.com',
-        androidClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
+        iosClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
+        webClientId: '178886195513-tsd7olkbl12cp85m7c5n7rg16tpas4dc.apps.googleusercontent.com',
       });
 
   React.useEffect(() => {
