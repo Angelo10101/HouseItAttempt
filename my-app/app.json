@@ -18,7 +18,7 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah"
+          "reservedClientId": "com.googleusercontent.apps.178886195513-oc848g8b5akchj95bmgjg3al8aiii9rd"
         }
       }
     },
