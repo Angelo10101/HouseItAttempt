@@ -10,15 +10,45 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useRouter } from 'expo-router';
+import * as Google from 'expo-auth-session/providers/google';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState('login');
   const router = useRouter();
+
+  const [request, response, promptAsync] = Platform.OS === 'web' 
+    ? [null, null, null]
+    : Google.useIdTokenAuthRequest({
+        iosClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
+        androidClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
+      });
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { idToken, accessToken } = response.authentication || {};
+      if (idToken) {
+        const credential = GoogleAuthProvider.credential(idToken, accessToken);
+        signInWithCredential(auth, credential)
+          .then(() => {
+            Alert.alert('Success', 'Signed in with Google successfully!', [
+              { text: 'OK', onPress: () => router.push('/') }
+            ]);
+          })
+          .catch((error) => {
+            Alert.alert('Error', 'Failed to sign in with Google. Please try again.');
+          });
+      }
+    } else if (response?.type === 'error') {
+      Alert.alert('Authentication Error', 'Failed to sign in with Google. Please try again.');
+    } else if (response?.type === 'cancel' || response?.type === 'dismiss') {
+      Alert.alert('Cancelled', 'Google sign-in was cancelled.');
+    }
+  }, [response]);
 
   const handleSubmit = async () => {
     try {
@@ -35,6 +65,34 @@ export default function AuthScreen() {
       }
     } catch (error) {
       Alert.alert('Error', error.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        Alert.alert('Success', 'Signed in with Google successfully!', [
+          { text: 'OK', onPress: () => router.push('/') }
+        ]);
+      } else {
+        if (request) {
+          await promptAsync();
+        } else {
+          Alert.alert('Error', 'Google Sign-In is not ready yet. Please try again in a moment.');
+        }
+      }
+    } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        Alert.alert('Cancelled', 'Google sign-in was cancelled.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        Alert.alert('Cancelled', 'Google sign-in was cancelled.');
+      } else if (error.code === 'auth/popup-blocked') {
+        Alert.alert('Popup Blocked', 'Please allow popups for this site to sign in with Google.');
+      } else {
+        Alert.alert('Error', 'Failed to sign in with Google. Please try again.');
+      }
     }
   };
 
@@ -83,6 +141,16 @@ export default function AuthScreen() {
           <Text style={styles.submitButtonText}>
             {mode === 'signup' ? 'Sign Up' : 'Sign In'}
           </Text>
+        </TouchableOpacity>
+
+        <View style={styles.dividerContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.dividerText}>OR</Text>
+          <View style={styles.divider} />
+        </View>
+
+        <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+          <Text style={styles.googleButtonText}>Continue with Google</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -181,5 +249,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  dividerText: {
+    color: '#999999',
+    paddingHorizontal: 16,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  googleButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingVertical: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  googleButtonText: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
