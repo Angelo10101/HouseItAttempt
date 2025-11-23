@@ -24,7 +24,7 @@ export default function AuthScreen() {
   const [request, response, promptAsync] = Platform.OS === 'web' 
     ? [null, null, null]
     : Google.useIdTokenAuthRequest({
-        iosClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
+        iosClientId: '178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij.apps.googleusercontent.com',
         androidClientId: '178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com',
       });
 

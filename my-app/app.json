@@ -6,6 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
+    "ios": {
+      "scheme": "com.googleusercontent.apps.178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij"
+    },
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -14,6 +17,12 @@
       "bundleIdentifier": "com.asdfangelo.houseit",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij"
+        }
       }
     },
     "android": {

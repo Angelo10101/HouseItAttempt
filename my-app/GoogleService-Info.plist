@@ -1,23 +1,24 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah.apps.googleusercontent.com</string>
+	<string>178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.178886195513-kae6h41grkskcq8tj4fllja6o4rgpsah</string>
+	<string>com.googleusercontent.apps.178886195513-f4u3kkfvtk12l9vhat1knqi12e8gdiij</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBmUzwABwM32rPrTGw3i8H1m0rhESDVpjI</string>
+	<string>AIzaSyDZ8LMZ_Mvro1VnRLQqIUt3y1yLGrbjWo8</string>
 	<key>GCM_SENDER_ID</key>
 	<string>178886195513</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.angelob.houseitattempt</string>
+	<string>com.asdfangelo.houseit</string>
 	<key>PROJECT_ID</key>
 	<string>houseitattempt</string>
 	<key>STORAGE_BUCKET</key>
-	<string>houseitattempt.firebasestorage.app</string>
+	<string>houseitattempt.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +30,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:178886195513:ios:98f17948923c02a60d10e8</string>
+	<string>1:178886195513:ios:1de9ff03f39f366f0d10e8</string>
 </dict>
 </plist>
