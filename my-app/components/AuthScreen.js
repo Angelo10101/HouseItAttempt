@@ -36,7 +36,7 @@ export default function AuthScreen() {
         signInWithCredential(auth, credential)
           .then(() => {
             Alert.alert('Success', 'Signed in with Google successfully!', [
-              { text: 'OK', onPress: () => router.push('/') }
+              { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
             ]);
           })
           .catch((error) => {
@@ -55,7 +55,7 @@ export default function AuthScreen() {
       if (mode === 'signup') {
         await createUserWithEmailAndPassword(auth, email, password);
         Alert.alert('Success', 'Account created successfully!', [
-          { text: 'OK', onPress: () => router.push('/') }
+          { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
         ]);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
@@ -74,7 +74,7 @@ export default function AuthScreen() {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
         Alert.alert('Success', 'Signed in with Google successfully!', [
-          { text: 'OK', onPress: () => router.push('/') }
+          { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
         ]);
       } else {
         if (request) {

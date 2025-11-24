@@ -1,34 +1,90 @@
 
+
 import { StyleSheet, ScrollView, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
-import { getRequests } from '../../services/firestoreService';
+import { getRequests, getUserProfile, saveUserProfile, getAddresses, saveAddress, deleteAddress } from '../../services/firestoreService';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
+import UserProfileForm from '../../components/UserProfileForm';
+import AddressForm from '../../components/AddressForm';
 
 export default function ProfileScreen() {
   const [user, loading] = useAuthState(auth);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
     if (user?.uid) {
-      loadOrders();
+      loadUserData();
     }
   }, [user]);
 
-  const loadOrders = async () => {
+  const loadUserData = async () => {
     try {
       setLoadingOrders(true);
-      const requests = await getRequests(user.uid);
+      setLoadingProfile(true);
+      
+      const [requests, profile, userAddresses] = await Promise.all([
+        getRequests(user.uid),
+        getUserProfile(user.uid),
+        getAddresses(user.uid),
+      ]);
+      
       setOrders(requests);
+      setUserProfile(profile);
+      setAddresses(userAddresses);
+      
+      // Show profile form if user hasn't completed their profile
+      if (!profile || !profile.firstName || !profile.lastName || !profile.phoneNumber) {
+        setShowProfileForm(true);
+      }
     } catch (error) {
-      console.error('Error loading orders:', error);
+      console.error('Error loading user data:', error);
     } finally {
       setLoadingOrders(false);
+      setLoadingProfile(false);
+    }
+  };
+
+  const handleProfileSubmit = async (profileData) => {
+    try {
+      await saveUserProfile(user.uid, profileData);
+      setUserProfile(profileData);
+      setShowProfileForm(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
+    }
+  };
+
+  const handleAddressSubmit = async (addressData) => {
+    try {
+      await saveAddress(user.uid, addressData);
+      const updatedAddresses = await getAddresses(user.uid);
+      setAddresses(updatedAddresses);
+      setShowAddressForm(false);
+    } catch (error) {
+      console.error('Error saving address:', error);
+      alert('Failed to save address. Please try again.');
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await deleteAddress(user.uid, addressId);
+      setAddresses(addresses.filter(addr => addr.id !== addressId));
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      alert('Failed to delete address. Please try again.');
     }
   };
 
@@ -77,19 +133,82 @@ export default function ProfileScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* User Info Section */}
         <ThemedView style={styles.userInfoCard}>
-          <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
-            Account Information
-          </ThemedText>
-          <ThemedView style={styles.infoRow}>
-            <ThemedText style={styles.infoLabel}>Email:</ThemedText>
-            <ThemedText style={styles.infoValue}>{user.email}</ThemedText>
-          </ThemedView>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
+              Personal Information
+            </ThemedText>
+            <TouchableOpacity onPress={() => setShowProfileForm(true)}>
+              <ThemedText style={styles.editButton}>Edit</ThemedText>
+            </TouchableOpacity>
+          </View>
+          
+          {loadingProfile ? (
+            <ActivityIndicator size="small" color="#000000" />
+          ) : (
+            <>
+              {userProfile?.firstName && (
+                <ThemedView style={styles.infoRow}>
+                  <ThemedText style={styles.infoLabel}>Name:</ThemedText>
+                  <ThemedText style={styles.infoValue}>
+                    {userProfile.firstName} {userProfile.lastName}
+                  </ThemedText>
+                </ThemedView>
+              )}
+              <ThemedView style={styles.infoRow}>
+                <ThemedText style={styles.infoLabel}>Email:</ThemedText>
+                <ThemedText style={styles.infoValue}>{user.email}</ThemedText>
+              </ThemedView>
+              {userProfile?.phoneNumber && (
+                <ThemedView style={styles.infoRow}>
+                  <ThemedText style={styles.infoLabel}>Phone:</ThemedText>
+                  <ThemedText style={styles.infoValue}>{userProfile.phoneNumber}</ThemedText>
+                </ThemedView>
+              )}
+            </>
+          )}
+          
           <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
           >
             <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
           </TouchableOpacity>
+        </ThemedView>
+
+        {/* Address Book Section */}
+        <ThemedView style={styles.addressSection}>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
+              Address Book
+            </ThemedText>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => setShowAddressForm(true)}
+            >
+              <ThemedText style={styles.addButtonText}>+ Add</ThemedText>
+            </TouchableOpacity>
+          </View>
+
+          {addresses.length === 0 ? (
+            <ThemedText style={styles.noAddresses}>No addresses saved</ThemedText>
+          ) : (
+            addresses.map((address) => (
+              <ThemedView key={address.id} style={styles.addressCard}>
+                <View style={styles.addressHeader}>
+                  <ThemedText type="defaultSemiBold" style={styles.addressLabel}>
+                    {address.label || 'Address'}
+                  </ThemedText>
+                  <TouchableOpacity onPress={() => handleDeleteAddress(address.id)}>
+                    <ThemedText style={styles.deleteButton}>Delete</ThemedText>
+                  </TouchableOpacity>
+                </View>
+                <ThemedText style={styles.addressText}>{address.streetAddress}</ThemedText>
+                <ThemedText style={styles.addressText}>
+                  {address.city}, {address.province} {address.postalCode}
+                </ThemedText>
+              </ThemedView>
+            ))
+          )}
         </ThemedView>
 
         {/* Order History Section */}
@@ -145,6 +264,19 @@ export default function ProfileScreen() {
           )}
         </ThemedView>
       </ScrollView>
+
+      <UserProfileForm
+        visible={showProfileForm}
+        onSubmit={handleProfileSubmit}
+        onSkip={() => setShowProfileForm(false)}
+        initialData={userProfile}
+      />
+
+      <AddressForm
+        visible={showAddressForm}
+        onSubmit={handleAddressSubmit}
+        onCancel={() => setShowAddressForm(false)}
+      />
     </ThemedView>
   );
 }
@@ -191,10 +323,20 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 24,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: 'transparent',
+  },
   sectionTitle: {
     fontSize: 18,
     color: '#000000',
-    marginBottom: 16,
+  },
+  editButton: {
+    color: '#007AFF',
+    fontSize: 16,
   },
   infoRow: {
     flexDirection: 'row',
@@ -221,6 +363,53 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  addressSection: {
+    backgroundColor: 'transparent',
+    marginBottom: 24,
+  },
+  addButton: {
+    backgroundColor: '#000000',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  noAddresses: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  addressCard: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  addressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    backgroundColor: 'transparent',
+  },
+  addressLabel: {
+    fontSize: 16,
+    color: '#000000',
+  },
+  deleteButton: {
+    color: '#FF3B30',
+    fontSize: 14,
+  },
+  addressText: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 4,
   },
   orderHistorySection: {
     backgroundColor: 'transparent',
