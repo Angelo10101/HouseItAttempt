@@ -130,3 +130,89 @@ export const getRequest = async (userId, requestId) => {
     throw error;
   }
 };
+
+// Address functions
+export const saveAddress = async (userId, addressData) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    const addressesRef = collection(db, 'users', userId, 'addresses');
+    const docRef = await addDoc(addressesRef, {
+      ...addressData,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Error saving address:', error);
+    throw error;
+  }
+};
+
+export const getAddresses = async (userId) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    const addressesRef = collection(db, 'users', userId, 'addresses');
+    const querySnapshot = await getDocs(addressesRef);
+    const addresses = [];
+    querySnapshot.forEach((doc) => {
+      addresses.push({ id: doc.id, ...doc.data() });
+    });
+    return addresses;
+  } catch (error) {
+    console.error('Error fetching addresses:', error);
+    throw error;
+  }
+};
+
+export const deleteAddress = async (userId, addressId) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    const addressRef = doc(db, 'users', userId, 'addresses', addressId);
+    await deleteDoc(addressRef);
+    return true;
+  } catch (error) {
+    console.error('Error deleting address:', error);
+    throw error;
+  }
+};
+
+// User profile functions
+export const saveUserProfile = async (userId, profileData) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    const userRef = doc(db, 'users', userId);
+    await setDoc(userRef, {
+      ...profileData,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error('Error saving user profile:', error);
+    throw error;
+  }
+};
+
+export const getUserProfile = async (userId) => {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    const userRef = doc(db, 'users', userId);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};
