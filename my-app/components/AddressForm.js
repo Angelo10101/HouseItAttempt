@@ -69,6 +69,7 @@ export default function AddressForm({ visible, onSubmit, onCancel }) {
             <TextInput
               style={styles.input}
               placeholder="e.g., Home, Work, Office"
+              placeholderTextColor="#888"
               value={label}
               onChangeText={setLabel}
               autoCapitalize="words"
@@ -78,6 +79,7 @@ export default function AddressForm({ visible, onSubmit, onCancel }) {
             <TextInput
               style={styles.input}
               placeholder="123 Main Street"
+              placeholderTextColor="#888"
               value={streetAddress}
               onChangeText={setStreetAddress}
               autoCapitalize="words"
@@ -87,6 +89,7 @@ export default function AddressForm({ visible, onSubmit, onCancel }) {
             <TextInput
               style={styles.input}
               placeholder="Johannesburg"
+              placeholderTextColor="#888"
               value={city}
               onChangeText={setCity}
               autoCapitalize="words"
@@ -96,6 +99,7 @@ export default function AddressForm({ visible, onSubmit, onCancel }) {
             <TextInput
               style={styles.input}
               placeholder="Gauteng"
+              placeholderTextColor="#888"
               value={province}
               onChangeText={setProvince}
               autoCapitalize="words"
@@ -105,6 +109,7 @@ export default function AddressForm({ visible, onSubmit, onCancel }) {
             <TextInput
               style={styles.input}
               placeholder="2000"
+              placeholderTextColor="#888"
               value={postalCode}
               onChangeText={setPostalCode}
               keyboardType="numeric"

@@ -55,6 +55,7 @@ export default function UserProfileForm({ visible, onSubmit, onSkip, initialData
           <TextInput
             style={styles.input}
             placeholder="First Name"
+            placeholderTextColor="#888"
             value={firstName}
             onChangeText={setFirstName}
             autoCapitalize="words"
@@ -63,6 +64,7 @@ export default function UserProfileForm({ visible, onSubmit, onSkip, initialData
           <TextInput
             style={styles.input}
             placeholder="Last Name"
+            placeholderTextColor="#888"
             value={lastName}
             onChangeText={setLastName}
             autoCapitalize="words"
@@ -71,6 +73,7 @@ export default function UserProfileForm({ visible, onSubmit, onSkip, initialData
           <TextInput
             style={styles.input}
             placeholder="Phone Number"
+            placeholderTextColor="#888"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
