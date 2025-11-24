@@ -13,10 +13,10 @@ import {
   ScrollView,
 } from 'react-native';
 
-export default function UserProfileForm({ visible, onSubmit, onSkip, initialData = {} }) {
-  const [firstName, setFirstName] = useState(initialData.firstName || '');
-  const [lastName, setLastName] = useState(initialData.lastName || '');
-  const [phoneNumber, setPhoneNumber] = useState(initialData.phoneNumber || '');
+export default function UserProfileForm({ visible, onSubmit, onSkip, initialData = null }) {
+  const [firstName, setFirstName] = useState(initialData?.firstName || '');
+  const [lastName, setLastName] = useState(initialData?.lastName || '');
+  const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || '');
 
   const handleSubmit = () => {
     if (!firstName.trim() || !lastName.trim() || !phoneNumber.trim()) {

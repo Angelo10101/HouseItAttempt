@@ -23,8 +23,8 @@ const services = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const [user] = useAuthState(auth);
-  
+  const [user, loading] = useAuthState(auth);
+
   const navigateToService = (serviceId: string) => {
     router.push(`/service/${serviceId}`);
   };
@@ -48,7 +48,7 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
         <ThemedText style={styles.headerSubtitle}>Home Services at Your Fingertips</ThemedText>
-        {!user && (
+        {!loading && !user && (
           <TouchableOpacity
             style={styles.loginButton}
             onPress={() => router.push('/auth')}
