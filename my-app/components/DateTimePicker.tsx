@@ -7,7 +7,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 
@@ -54,7 +54,7 @@ export default function DateTimePickerComponent({
     return maxDate;
   };
 
-  const handleDateChange = (event: any, date?: Date) => {
+  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
     if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
@@ -63,7 +63,7 @@ export default function DateTimePickerComponent({
     }
   };
 
-  const handleTimeChange = (event: any, time?: Date) => {
+  const handleTimeChange = (event: DateTimePickerEvent, time?: Date) => {
     if (Platform.OS === 'android') {
       setShowTimePicker(false);
     }
@@ -185,9 +185,13 @@ export default function DateTimePickerComponent({
 
               <View style={styles.timeSlotsGrid}>
                 {timeSlots.map((slot, index) => {
-                  const isSelected =
-                    formatTime(selectedTime) === slot.time ||
-                    formatTime(selectedTime).startsWith(slot.time.split(':')[0]);
+                  // Extract hour and minute from slot time
+                  const [slotHour, slotMinute] = slot.time.split(':').map(Number);
+                  const selectedHour = selectedTime.getHours();
+                  const selectedMinute = selectedTime.getMinutes();
+                  
+                  // Check if the slot matches the selected time
+                  const isSelected = slotHour === selectedHour && slotMinute === selectedMinute;
 
                   return (
                     <TouchableOpacity
