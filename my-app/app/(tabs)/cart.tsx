@@ -4,19 +4,26 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
-import { getCartItems, clearCart, saveRequest } from '../../services/firestoreService';
+import { getCartItems, clearCart, saveRequest, getAddresses, saveAddress } from '../../services/firestoreService';
 import { useState, useEffect } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
+import AddressSelector from '@/components/AddressSelector';
+import AddressForm from '@/components/AddressForm';
 
 export default function CartScreen() {
   const [user, loading] = useAuthState(auth);
   const [cartItems, setCartItems] = useState([]);
   const [loadingCart, setLoadingCart] = useState(true);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showAddressSelector, setShowAddressSelector] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
 
   useEffect(() => {
     if (user?.uid) {
       loadCart();
+      loadAddresses();
     } else {
       setLoadingCart(false);
     }
@@ -26,6 +33,7 @@ export default function CartScreen() {
     useCallback(() => {
       if (user?.uid) {
         loadCart();
+        loadAddresses();
       }
     }, [user])
   );
@@ -42,6 +50,19 @@ export default function CartScreen() {
     }
   };
 
+  const loadAddresses = async () => {
+    try {
+      const userAddresses = await getAddresses(user.uid);
+      setAddresses(userAddresses);
+      // Auto-select the first address if available and none is selected
+      if (userAddresses.length > 0 && !selectedAddressId) {
+        setSelectedAddressId(userAddresses[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading addresses:', error);
+    }
+  };
+
   const getTotalPrice = () => {
     return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
   };
@@ -52,11 +73,33 @@ export default function CartScreen() {
       return;
     }
 
+    // Check if user has any addresses
+    if (addresses.length === 0) {
+      Alert.alert(
+        'No Address',
+        'Please add a delivery address before placing your order.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Add Address', onPress: () => setShowAddressForm(true) }
+        ]
+      );
+      return;
+    }
+
+    // Check if an address is selected
+    if (!selectedAddressId) {
+      Alert.alert('No Address Selected', 'Please select a delivery address.');
+      setShowAddressSelector(true);
+      return;
+    }
+
     try {
+      const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
       const requestData = {
         items: cartItems,
         total: parseFloat(getTotalPrice()),
         status: 'pending',
+        deliveryAddress: selectedAddress,
       };
 
       await saveRequest(user.uid, requestData);
@@ -94,6 +137,33 @@ export default function CartScreen() {
         },
       ]
     );
+  };
+
+  const handleAddressSubmit = async (addressData: any) => {
+    try {
+      const newAddressId = await saveAddress(user.uid, addressData);
+      await loadAddresses();
+      setShowAddressForm(false);
+      // Auto-select the newly added address
+      if (newAddressId) {
+        setSelectedAddressId(newAddressId);
+      }
+      Alert.alert('Success', 'Address added successfully');
+    } catch (error) {
+      console.error('Error saving address:', error);
+      Alert.alert('Error', 'Failed to save address. Please try again.');
+    }
+  };
+
+  const handleSelectAddress = (addressId: string) => {
+    setSelectedAddressId(addressId);
+  };
+
+  const getSelectedAddressDisplay = () => {
+    if (!selectedAddressId) return null;
+    const address = addresses.find(addr => addr.id === selectedAddressId);
+    if (!address) return null;
+    return `${address.label || 'Address'}: ${address.streetAddress}, ${address.city}`;
   };
 
   if (loading || loadingCart) {
@@ -176,6 +246,26 @@ export default function CartScreen() {
           </ScrollView>
 
           <ThemedView style={styles.checkoutContainer}>
+            {/* Delivery Address Section */}
+            <TouchableOpacity
+              style={styles.addressSelector}
+              onPress={() => setShowAddressSelector(true)}
+            >
+              <ThemedView style={styles.addressSelectorContent}>
+                <ThemedText style={styles.addressLabel}>Delivery Address:</ThemedText>
+                {selectedAddressId ? (
+                  <ThemedText style={styles.addressValue} numberOfLines={1}>
+                    {getSelectedAddressDisplay()}
+                  </ThemedText>
+                ) : (
+                  <ThemedText style={styles.addressPlaceholder}>
+                    Tap to select address
+                  </ThemedText>
+                )}
+              </ThemedView>
+              <ThemedText style={styles.changeButton}>Change</ThemedText>
+            </TouchableOpacity>
+
             <ThemedView style={styles.totalRow}>
               <ThemedText type="defaultSemiBold" style={styles.totalLabel}>
                 Total:
@@ -195,6 +285,24 @@ export default function CartScreen() {
           </ThemedView>
         </>
       )}
+
+      <AddressSelector
+        visible={showAddressSelector}
+        addresses={addresses}
+        selectedAddressId={selectedAddressId}
+        onSelectAddress={handleSelectAddress}
+        onCancel={() => setShowAddressSelector(false)}
+        onAddNewAddress={() => {
+          setShowAddressSelector(false);
+          setShowAddressForm(true);
+        }}
+      />
+
+      <AddressForm
+        visible={showAddressForm}
+        onSubmit={handleAddressSubmit}
+        onCancel={() => setShowAddressForm(false)}
+      />
     </ThemedView>
   );
 }
@@ -270,7 +378,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   bottomSpacer: {
-    height: 140,
+    height: 200,
     backgroundColor: 'transparent',
   },
   cartItem: {
@@ -319,6 +427,42 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
+  },
+  addressSelector: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  addressSelectorContent: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  addressLabel: {
+    fontSize: 12,
+    color: '#666666',
+    marginBottom: 4,
+  },
+  addressValue: {
+    fontSize: 14,
+    color: '#000000',
+    fontWeight: '500',
+  },
+  addressPlaceholder: {
+    fontSize: 14,
+    color: '#999999',
+    fontStyle: 'italic',
+  },
+  changeButton: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
   },
   totalRow: {
     flexDirection: 'row',
