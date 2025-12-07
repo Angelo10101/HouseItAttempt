@@ -244,6 +244,20 @@ export default function ProfileScreen() {
                   {order.createdAt?.toDate?.()?.toLocaleDateString() || 'Date unavailable'}
                 </ThemedText>
 
+                {order.deliveryAddress && (
+                  <ThemedView style={styles.orderAddress}>
+                    <ThemedText style={styles.orderAddressLabel}>
+                      Delivery Address:
+                    </ThemedText>
+                    <ThemedText style={styles.orderAddressText}>
+                      {order.deliveryAddress.streetAddress}
+                    </ThemedText>
+                    <ThemedText style={styles.orderAddressText}>
+                      {order.deliveryAddress.city}, {order.deliveryAddress.province} {order.deliveryAddress.postalCode}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
                 {order.items && order.items.length > 0 && (
                   <ThemedView style={styles.orderItems}>
                     {order.items.map((item, index) => (
@@ -465,6 +479,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666666',
     marginBottom: 12,
+  },
+  orderAddress: {
+    backgroundColor: '#E8F4F8',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  orderAddressLabel: {
+    fontSize: 12,
+    color: '#666666',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  orderAddressText: {
+    fontSize: 12,
+    color: '#000000',
+    marginBottom: 2,
   },
   orderItems: {
     marginBottom: 12,
