@@ -35,11 +35,6 @@ export default function AddressSelector({
   onCancel,
   onAddNewAddress,
 }: AddressSelectorProps) {
-  
-  const handleSelectAddress = (addressId: string) => {
-    onSelectAddress(addressId);
-  };
-
   return (
     <Modal
       visible={visible}
@@ -81,7 +76,7 @@ export default function AddressSelector({
                       styles.addressCard,
                       selectedAddressId === address.id && styles.selectedCard,
                     ]}
-                    onPress={() => handleSelectAddress(address.id)}
+                    onPress={() => onSelectAddress(address.id)}
                   >
                     <View style={styles.addressContent}>
                       <View style={styles.addressHeader}>

@@ -28,6 +28,14 @@ interface Address {
   postalCode: string;
 }
 
+interface AddressFormData {
+  label?: string;
+  streetAddress: string;
+  city: string;
+  province: string;
+  postalCode: string;
+}
+
 export default function CartScreen() {
   const [user, loading] = useAuthState(auth);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -163,7 +171,7 @@ export default function CartScreen() {
     );
   };
 
-  const handleAddressSubmit = async (addressData: Address) => {
+  const handleAddressSubmit = async (addressData: AddressFormData) => {
     if (!user?.uid) return;
     
     try {
@@ -404,6 +412,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   bottomSpacer: {
+    // Height accounts for: address selector (80px) + total row (40px) + button (48px) + padding/margins (32px) = 200px
     height: 200,
     backgroundColor: 'transparent',
   },
