@@ -11,11 +11,28 @@ import { useCallback } from 'react';
 import AddressSelector from '@/components/AddressSelector';
 import AddressForm from '@/components/AddressForm';
 
+interface CartItem {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+}
+
+interface Address {
+  id: string;
+  label?: string;
+  streetAddress: string;
+  city: string;
+  province: string;
+  postalCode: string;
+}
+
 export default function CartScreen() {
   const [user, loading] = useAuthState(auth);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loadingCart, setLoadingCart] = useState(true);
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -39,10 +56,11 @@ export default function CartScreen() {
   );
 
   const loadCart = async () => {
+    if (!user?.uid) return;
     try {
       setLoadingCart(true);
       const items = await getCartItems(user.uid);
-      setCartItems(items);
+      setCartItems(items as CartItem[]);
     } catch (error) {
       console.error('Error loading cart:', error);
     } finally {
@@ -51,9 +69,10 @@ export default function CartScreen() {
   };
 
   const loadAddresses = async () => {
+    if (!user?.uid) return;
     try {
       const userAddresses = await getAddresses(user.uid);
-      setAddresses(userAddresses);
+      setAddresses(userAddresses as Address[]);
       // Auto-select the first address if available and none is selected
       if (userAddresses.length > 0 && !selectedAddressId) {
         setSelectedAddressId(userAddresses[0].id);
@@ -93,6 +112,8 @@ export default function CartScreen() {
       return;
     }
 
+    if (!user?.uid) return;
+    
     try {
       const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
       const requestData = {
@@ -116,6 +137,8 @@ export default function CartScreen() {
   };
 
   const handleClearCart = async () => {
+    if (!user?.uid) return;
+    
     Alert.alert(
       'Clear Cart',
       'Are you sure you want to remove all items from your cart?',
@@ -125,6 +148,7 @@ export default function CartScreen() {
           text: 'Clear',
           style: 'destructive',
           onPress: async () => {
+            if (!user?.uid) return;
             try {
               await clearCart(user.uid);
               setCartItems([]);
@@ -139,7 +163,9 @@ export default function CartScreen() {
     );
   };
 
-  const handleAddressSubmit = async (addressData: any) => {
+  const handleAddressSubmit = async (addressData: Address) => {
+    if (!user?.uid) return;
+    
     try {
       const newAddressId = await saveAddress(user.uid, addressData);
       await loadAddresses();
