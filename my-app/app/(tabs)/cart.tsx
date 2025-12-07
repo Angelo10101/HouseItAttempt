@@ -1,15 +1,15 @@
 
 import { StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase';
 import { getCartItems, clearCart, saveRequest, getAddresses, saveAddress } from '../../services/firestoreService';
-import { useState, useEffect } from 'react';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
 import AddressSelector from '@/components/AddressSelector';
 import AddressForm from '@/components/AddressForm';
+import DateTimePickerComponent from '@/components/DateTimePicker';
 
 interface CartItem {
   id: string;
@@ -44,6 +44,8 @@ export default function CartScreen() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+  const [showDateTimePicker, setShowDateTimePicker] = useState(false);
 
   useEffect(() => {
     if (user?.uid) {
@@ -120,6 +122,13 @@ export default function CartScreen() {
       return;
     }
 
+    // Check if a date/time is selected
+    if (!selectedDateTime) {
+      Alert.alert('No Date/Time Selected', 'Please select when you\'d like the service.');
+      setShowDateTimePicker(true);
+      return;
+    }
+
     if (!user?.uid) return;
     
     try {
@@ -129,11 +138,13 @@ export default function CartScreen() {
         total: parseFloat(getTotalPrice()),
         status: 'pending',
         deliveryAddress: selectedAddress,
+        scheduledDateTime: selectedDateTime.toISOString(),
       };
 
       await saveRequest(user.uid, requestData);
       await clearCart(user.uid);
       setCartItems([]);
+      setSelectedDateTime(null);
       
       Alert.alert('Success', 'Your order has been placed!', [
         { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
@@ -198,6 +209,24 @@ export default function CartScreen() {
     const address = addresses.find(addr => addr.id === selectedAddressId);
     if (!address) return null;
     return `${address.label || 'Address'}: ${address.streetAddress}, ${address.city}`;
+  };
+
+  const handleSelectDateTime = (dateTime: Date) => {
+    setSelectedDateTime(dateTime);
+    setShowDateTimePicker(false);
+  };
+
+  const formatSelectedDateTime = () => {
+    if (!selectedDateTime) return null;
+    return selectedDateTime.toLocaleString('en-ZA', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
   };
 
   if (loading || loadingCart) {
@@ -300,6 +329,26 @@ export default function CartScreen() {
               <ThemedText style={styles.changeButton}>Change</ThemedText>
             </TouchableOpacity>
 
+            {/* Date & Time Selection */}
+            <TouchableOpacity
+              style={styles.addressSelector}
+              onPress={() => setShowDateTimePicker(true)}
+            >
+              <ThemedView style={styles.addressSelectorContent}>
+                <ThemedText style={styles.addressLabel}>Service Date & Time:</ThemedText>
+                {selectedDateTime ? (
+                  <ThemedText style={styles.addressValue} numberOfLines={1}>
+                    {formatSelectedDateTime()}
+                  </ThemedText>
+                ) : (
+                  <ThemedText style={styles.addressPlaceholder}>
+                    Tap to select date & time
+                  </ThemedText>
+                )}
+              </ThemedView>
+              <ThemedText style={styles.changeButton}>Change</ThemedText>
+            </TouchableOpacity>
+
             <ThemedView style={styles.totalRow}>
               <ThemedText type="defaultSemiBold" style={styles.totalLabel}>
                 Total:
@@ -336,6 +385,13 @@ export default function CartScreen() {
         visible={showAddressForm}
         onSubmit={handleAddressSubmit}
         onCancel={() => setShowAddressForm(false)}
+      />
+
+      <DateTimePickerComponent
+        visible={showDateTimePicker}
+        selectedDateTime={selectedDateTime}
+        onSelectDateTime={handleSelectDateTime}
+        onCancel={() => setShowDateTimePicker(false)}
       />
     </ThemedView>
   );
@@ -412,8 +468,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   bottomSpacer: {
-    // Height accounts for: address selector (80px) + total row (40px) + button (48px) + padding/margins (32px) = 200px
-    height: 200,
+    // Height accounts for: 2 selectors (160px) + total row (40px) + button (48px) + padding/margins (32px) = 280px
+    height: 280,
     backgroundColor: 'transparent',
   },
   cartItem: {
