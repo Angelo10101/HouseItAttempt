@@ -20,7 +20,7 @@ initialize_app()
 
 # Paystack Secret Key - Should be set as an environment variable
 # Set this using: firebase functions:config:set paystack.secret_key="your_secret_key"
-PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', '')
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY')
 
 @https_fn.on_call()
 def initiatePayment(req: https_fn.CallableRequest) -> dict:

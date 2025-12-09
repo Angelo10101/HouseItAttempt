@@ -28,9 +28,16 @@ export default function PaymentWebView({
     // Paystack callback URL format: myapp://payment/callback?reference=xxx&trxref=xxx&status=success
     if (url.includes('myapp://payment/callback')) {
       try {
-        const urlObj = new URL(url);
-        const status = urlObj.searchParams.get('status');
-        const reference = urlObj.searchParams.get('reference') || urlObj.searchParams.get('trxref');
+        // Parse query parameters from deep link URL
+        const queryString = url.split('?')[1];
+        if (!queryString) {
+          onError('Invalid payment callback URL');
+          return;
+        }
+        
+        const params = new URLSearchParams(queryString);
+        const status = params.get('status');
+        const reference = params.get('reference') || params.get('trxref');
         
         if (status === 'success' && reference) {
           onSuccess(reference);

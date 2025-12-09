@@ -153,7 +153,7 @@ export default function CartScreen() {
           price: item.price
         })),
         addressId: selectedAddressId,
-        scheduledDateTime: selectedDateTime.toISOString()
+        scheduledDateTime: selectedDateTime?.toISOString()
       };
       
       // Step 1: Initialize payment with Paystack
