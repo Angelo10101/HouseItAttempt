@@ -7,9 +7,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { auth } from '../../firebase';
 import { getCartItems, clearCart, saveRequest, getAddresses, saveAddress } from '../../services/firestoreService';
+import { initiatePayment, verifyPayment } from '../../services/paymentService';
 import AddressSelector from '@/components/AddressSelector';
 import AddressForm from '@/components/AddressForm';
 import DateTimePickerComponent from '@/components/DateTimePicker';
+import PaymentWebView from '@/components/PaymentWebView';
 
 interface CartItem {
   id: string;
@@ -46,6 +48,10 @@ export default function CartScreen() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
+  const [showPaymentWebView, setShowPaymentWebView] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState('');
+  const [paymentReference, setPaymentReference] = useState('');
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
     if (user?.uid) {
@@ -129,30 +135,99 @@ export default function CartScreen() {
       return;
     }
 
+    if (!user?.uid || !user?.email) return;
+    
+    try {
+      setProcessingPayment(true);
+      
+      const totalAmount = parseFloat(getTotalPrice());
+      const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
+      
+      // Prepare metadata to include order details
+      const metadata = {
+        userId: user.uid,
+        items: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        addressId: selectedAddressId,
+        scheduledDateTime: selectedDateTime.toISOString()
+      };
+      
+      // Step 1: Initialize payment with Paystack
+      const paymentInit = await initiatePayment(user.email, totalAmount, metadata);
+      
+      if (paymentInit.success && paymentInit.authorizationUrl) {
+        // Store payment reference for later verification
+        setPaymentReference(paymentInit.reference);
+        setPaymentUrl(paymentInit.authorizationUrl);
+        setShowPaymentWebView(true);
+      } else {
+        throw new Error('Failed to initialize payment');
+      }
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      Alert.alert('Payment Error', 'Failed to initialize payment. Please try again.');
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (reference: string) => {
     if (!user?.uid) return;
     
     try {
-      const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-      const requestData = {
-        items: cartItems,
-        total: parseFloat(getTotalPrice()),
-        status: 'pending',
-        deliveryAddress: selectedAddress,
-        scheduledDateTime: selectedDateTime.toISOString(),
-      };
-
-      await saveRequest(user.uid, requestData);
-      await clearCart(user.uid);
-      setCartItems([]);
-      setSelectedDateTime(null);
+      setProcessingPayment(true);
+      setShowPaymentWebView(false);
       
-      Alert.alert('Success', 'Your order has been placed!', [
-        { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
-      ]);
+      // Step 1: Verify payment with Paystack
+      const verification = await verifyPayment(reference);
+      
+      if (verification.success && verification.status === 'success') {
+        // Step 2: Payment verified, save the order
+        const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
+        const requestData = {
+          items: cartItems,
+          total: parseFloat(getTotalPrice()),
+          status: 'paid',
+          paymentStatus: 'completed',
+          paymentReference: reference,
+          deliveryAddress: selectedAddress,
+          scheduledDateTime: selectedDateTime?.toISOString(),
+        };
+
+        await saveRequest(user.uid, requestData);
+        await clearCart(user.uid);
+        setCartItems([]);
+        setSelectedDateTime(null);
+        setPaymentReference('');
+        
+        Alert.alert('Success', 'Payment completed! Your order has been placed.', [
+          { text: 'OK', onPress: () => router.push('/(tabs)/profile') }
+        ]);
+      } else {
+        throw new Error('Payment verification failed');
+      }
     } catch (error) {
-      console.error('Error during checkout:', error);
-      Alert.alert('Error', 'Failed to place order. Please try again.');
+      console.error('Error verifying payment:', error);
+      Alert.alert('Verification Error', 'Payment verification failed. Please contact support with reference: ' + reference);
+    } finally {
+      setProcessingPayment(false);
     }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentWebView(false);
+    setPaymentReference('');
+    Alert.alert('Payment Cancelled', 'You cancelled the payment. Your items are still in the cart.');
+  };
+
+  const handlePaymentError = (error: string) => {
+    setShowPaymentWebView(false);
+    setPaymentReference('');
+    Alert.alert('Payment Error', error);
   };
 
   const handleClearCart = async () => {
@@ -358,12 +433,17 @@ export default function CartScreen() {
               </ThemedText>
             </ThemedView>
             <TouchableOpacity
-              style={styles.checkoutButton}
+              style={[styles.checkoutButton, processingPayment && styles.checkoutButtonDisabled]}
               onPress={handleCheckout}
+              disabled={processingPayment}
             >
-              <ThemedText style={styles.checkoutButtonText}>
-                Place Order
-              </ThemedText>
+              {processingPayment ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <ThemedText style={styles.checkoutButtonText}>
+                  Proceed to Payment
+                </ThemedText>
+              )}
             </TouchableOpacity>
           </ThemedView>
         </>
@@ -392,6 +472,14 @@ export default function CartScreen() {
         selectedDateTime={selectedDateTime}
         onSelectDateTime={handleSelectDateTime}
         onCancel={() => setShowDateTimePicker(false)}
+      />
+
+      <PaymentWebView
+        visible={showPaymentWebView}
+        paymentUrl={paymentUrl}
+        onSuccess={handlePaymentSuccess}
+        onCancel={handlePaymentCancel}
+        onError={handlePaymentError}
       />
     </ThemedView>
   );
@@ -574,6 +662,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  checkoutButtonDisabled: {
+    backgroundColor: '#666666',
+    opacity: 0.6,
   },
   checkoutButtonText: {
     color: '#FFFFFF',
